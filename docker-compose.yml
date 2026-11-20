@@ -1,0 +1,31 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      FAKE_STORE_BASE_URL: https://fakestoreapi.com
+      CORS_ORIGIN: http://localhost:5173
+      SALES_INBOX: sales@example.com
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_FROM: catalogue@example.com
+    depends_on:
+      - mailhog
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:3001
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "1025:1025"
+      - "8025:8025"
